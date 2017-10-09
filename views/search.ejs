@@ -1,0 +1,22 @@
+<% if (errorMsg) { %>
+<h2><%= errorMsg %></h2>
+<% } %>
+
+<% if (param) { %>
+
+<form action="/search/request" method="post">
+    <input type="number" min="0" max="50" name="nbrPersonne" placeholder="Nombre de Voyageur" value="<%= param[0] %>">
+    <input type="text" name="ville" placeholder="Ville" value="<%= param[1] %>">
+    <input type="date" name="dateA" placeholder="Date" value="<%= param[2] %>">
+    <input type="date" name="dateD" placeholder="Date" value="<%= param[3] %>">
+    <input type="submit" name="valider">
+</form>
+<% }else{ %>
+<form action="/search/request" method="post">
+    <input type="number" name="nbrPersonne" placeholder="Nombre de Voyageur">
+    <input type="text" name="ville" placeholder="Ville">
+    <input type="date" name="dateA" placeholder="Arrivée">
+    <input type="date" name="dateD" placeholder="Départ">
+    <input type="submit" name="valider">
+</form>
+<% } %>
