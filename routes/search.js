@@ -34,26 +34,10 @@ router.post('/request', function (req, res) {
 
     var query = '';
 
-    if(!dateD && !ville){
-        console.log('AHHH111111111');
-        query = {"nbrPersonneMax": { $gte: nbrPersonne } };
-    }
-    else if(dateD && !ville){
-        console.log('AHHH222222222');
-        console.log('nbrPersonne : ');
-        console.log(nbrPersonne);
-        console.log('req.body.nbrPersonne : ');
-        console.log(req.body.nbrPersonne);
-        query = {"nbrPersonneMax": { $gte: nbrPersonne }, "dispo":{ $gte: new Date( dateD )} };
-    }
-    else if(!dateD && ville) {
-        console.log('AHHH333333333');
-        query = {"ville" : ville, "nbrPersonneMax": { $gte: nbrPersonne } };
-    }
-    else {
-        console.log('AHHH444444444');
-        query = {"ville" : ville, "nbrPersonneMax": { $gte: nbrPersonne }, "dispo":{ $gte: new Date( dateD )} };
-    }
+    if(!dateD && !ville) query = {"nbrPersonneMax": { $gte: nbrPersonne } };
+    else if(dateD && !ville) query = {"nbrPersonneMax": { $gte: nbrPersonne }, "dispo":{ $gte: new Date( dateD )} };
+    else if(!dateD && ville) query = {"ville" : ville, "nbrPersonneMax": { $gte: nbrPersonne } };
+    else query = {"ville" : ville, "nbrPersonneMax": { $gte: nbrPersonne }, "dispo":{ $gte: new Date( dateD )} };
 
 
     var formValid = false;
@@ -73,11 +57,8 @@ router.post('/request', function (req, res) {
 
     if(formValid){
 // Use connect method to connect to the server
-        MongoClient.connect(url, function(err, database) {
+        MongoClient.connect(url, function(err, db) {
             if(err) throw err;
-            db = database;
-            console.log('query ');
-            console.log(query);
             var collection = db.collection('logements');
             collection.find( query ).toArray(function(err,arr){
                 res.setHeader('Content-Type', 'application/json');
