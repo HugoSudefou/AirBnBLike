@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
+var search = require('./routes/search');
 
 var app = express();
 
@@ -24,6 +25,47 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
 app.use('/users', users);
+app.use('/search', search);
+
+/*
+var insertDocuments = function(db, callback) {
+  // Get the documents collection
+  var collection = db.collection('logement');
+  // Insert some documents
+    var myobj = [
+        {
+            ville: "Nanterre",
+            nbrPersonneMax: 5,
+            dispo: "14/11/17"
+        },
+        {
+            ville: "Lyon",
+            nbrPersonneMax: 3,
+            dispo: "14/02/18"
+        },
+        {
+            ville: "Marseille",
+            nbrPersonneMax: 2,
+            dispo: "20/06/18"
+        },
+        {
+            ville: "Nice",
+            nbrPersonneMax: 8,
+            dispo: "31/08/18"
+        },
+        {
+            ville: "Brest",
+            nbrPersonneMax: 4,
+            dispo: "05/01/18"
+        },
+        {
+            ville: "Strasbourg",
+            nbrPersonneMax: 3,
+            dispo: "18/12/17"
+        }
+    ];
+};
+*/
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
