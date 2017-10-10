@@ -1,12 +1,10 @@
 var express = require('express');
 var router = express.Router();
+var mongoose = require('mongoose');
+var Logements = require('../models/logements');
 
-var MongoClient = require('mongodb').MongoClient, assert = require('assert');
-var db;
-// Connection URL
-var url = 'mongodb://localhost:27017/airbnb';
-/* GET home page. */
 router.get('/', function(req, res, next) {
+    // get all the users
     if(req.param('errorMsg') != null){
         var errorMsg = req.param('errorMsg');
         var param = req.param('param');
@@ -29,7 +27,7 @@ router.post('/request', function (req, res) {
 
     if(req.body.nbrPersonne) var nbrPersonne = parseInt(req.body.nbrPersonne);
     if(req.body.ville != null) ville = req.body.ville;
-    if(req.body.dateA != null) dateA = req.body.dateA;
+    if(req.body.dateA != null) dateA = new Date(req.body.dateA);
     if(req.body.dateD != null) dateD = req.body.dateD;
 
     var query = '';
@@ -56,15 +54,14 @@ router.post('/request', function (req, res) {
     }
 
     if(formValid){
-// Use connect method to connect to the server
-        MongoClient.connect(url, function(err, db) {
-            if(err) throw err;
-            var collection = db.collection('logements');
-            collection.find( query ).toArray(function(err,arr){
-                res.setHeader('Content-Type', 'application/json');
-                res.send(JSON.stringify(arr, null, 3));
-            });
-            db.close();
+        var promise = Logements.find(query).exec();
+
+        promise.then(function(data) {
+            res.setHeader('Content-Type', 'application/json');
+            res.send(JSON.stringify(data, null, 3));
+        }).catch(function(err){
+            // just need one of these
+            console.log('error:', err);
         });
     }
 });
