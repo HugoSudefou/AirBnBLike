@@ -1,10 +1,10 @@
 // grab the things we need
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
-
+var autoIncrement = require('mongoose-auto-increment');
+autoIncrement.initialize(mongoose.connection);
 // create a schema
 var usersSchema = new Schema({
-    id: { type: Number, required: true, unique: true},
     pseudo: { type: String, required: true},
     nom: { type: String, required: true},
     prenom: { type: String, required: true },
@@ -13,6 +13,8 @@ var usersSchema = new Schema({
     birthday: { type: Date, required: true },
     salt: { type: String, required: true }
 });
+usersSchema.plugin(autoIncrement.plugin, 'users');
+
 
 // the schema is useless so far
 // we need to create a model using it
