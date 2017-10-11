@@ -9,38 +9,55 @@ var Logements = require('./models/logements');
 var Users = require('./models/users');
 var Booking = require('./models/booking');
 
+var config = require('./config');
+
+/*
+*
+*  A UTILISER POUR CRYPTER LE PASSWORD
+*
+* */
+var bcrypt   = require('bcrypt-nodejs');
+/*
+*
+*  A UTILISER POUR CRYPTER LE PASSWORD
+*
+* */
 var index = require('./routes/index');
 var users = require('./routes/users');
 var search = require('./routes/search');
 var booking = require('./routes/booking');
+var email = require('./routes/email');
+
+var msg = require('./routes/msg');
 
 // Connection URL
-var url = 'mongodb://localhost:27017/airbnb';
-
+//var url = 'mongodb://localhost:27017/airbnb';
 var app = express();
-
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
 
-// uncomment after placing your favicon in /public
+app.set('view engine', 'ejs');
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
 app.use('/', index);
 app.use('/users', users);
 app.use('/search', search);
 app.use('/booking', booking);
+app.use('/email', email);
+app.use('/msg', msg);
 
 
 
 /* GET home page. */
 mongoose.Promise = require('bluebird');
-mongoose.connect(url, {useMongoClient: true});
+//mongoose.connect(url, {useMongoClient: true});
+
+mongoose.connect(config.database, {useMongoClient: true}); // connect to database
+app.set('superSecret', config.secret); // secret variable
 console.log('Connection a la base : ');
 console.log(mongoose.connection.readyState);
 

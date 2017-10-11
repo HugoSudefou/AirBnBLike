@@ -42,8 +42,6 @@ router.post('/request', function(req, res, next) {
             );
             console.log(newBooking);
             newBooking.save();
-            res.setHeader('Content-Type', 'application/json');
-            res.send(JSON.stringify(newBooking, null, 3));
         }
         else {
             var newBooking = {
@@ -51,9 +49,10 @@ router.post('/request', function(req, res, next) {
                 "message": "Cette annonce est déjà reservé sur cette date"
             };
             console.log('Il y a déjà une réservation sur ces dates.');
-            res.setHeader('Content-Type', 'application/json');
-            res.send(JSON.stringify(newBooking, null, 3));
         }
+
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify(newBooking, null, 3));
     }).catch(function(err){
         // just need one of these
         console.log('error:', err);
