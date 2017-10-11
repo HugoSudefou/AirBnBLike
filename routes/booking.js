@@ -40,7 +40,6 @@ router.post('/request', function(req, res, next) {
                     dateD: new Date(dateD)
                 }
             );
-            console.log(newBooking);
             newBooking.save();
         }
         else {

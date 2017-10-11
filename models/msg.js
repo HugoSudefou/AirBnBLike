@@ -1,7 +1,6 @@
 // grab the things we need
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
-
 // create a schema
 var msgSchema = new Schema({
     idUserSend: { type: Number, required: true},
@@ -9,6 +8,8 @@ var msgSchema = new Schema({
     msg: { type: String, required: true },
     date: { type: Date, required: true }
 });
+
+
 
 // the schema is useless so far
 // we need to create a model using it

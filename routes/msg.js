@@ -1,13 +1,47 @@
 var mongoose = require('mongoose');
 var express = require('express');
 var nodemailer = require('nodemailer');
+var jwt    = require('jsonwebtoken');
 var Users = require('../models/users');
 var Msg = require('../models/msg');
 var querystring = require('querystring');
 var request = require('request');
+var email = require('../routes/email');
+var app = express();
+var config = require('../config');
 
+app.set('superSecret', config.secret); // secret variable
 var router = express.Router();
 
+router.use(function(req, res, next) {
+    // check header or url parameters or post parameters for token
+    var token = req.body.token || req.query.token || req.headers['x-access-token'];
+
+    // decode token
+    if (token) {
+
+        // verifies secret and checks exp
+        jwt.verify(token, app.get('superSecret'), function(err, decoded) {
+            if (err) {
+                return res.json({ success: false, message: 'Failed to authenticate token.' });
+            } else {
+                // if everything is good, save to request for use in other routes
+                req.decoded = decoded;
+                next();
+            }
+        });
+
+    } else {
+
+        // if there is no token
+        // return an error
+        return res.status(403).send({
+            success: false,
+            message: 'No token provided.'
+        });
+
+    }
+});
 /* GET home page. */
 router.get('/', function(req, res, next) {
 
@@ -32,30 +66,40 @@ router.post('/send', function(req, res, next) {
             date: date
         });
         newMsg.save();
-        var promise = Users.find({'id': {$in : [idUserSend, idUserRecive]}})
+        var promise = Users.find({'_id': {$in : [idUserSend, idUserRecive]}})
             .then(function (data) {
-                var pseudoSend =  "";
-                var pseudoRecive =  "";
-                var emailRecive = "";
-                var emailSend = "";
-                if(data[0].id == idUserSend) {
-                    pseudoSend = data[0].pseudo;
-                    emailSend = data[0].email;
-                    pseudoRecive =  data[1].pseudo;
-                    emailRecive =  data[1].email;
-                }
-                else {
-                    pseudoSend = data[1].pseudo;
-                    emailSend = data[1].email;
-                    pseudoRecive =  data[0].pseudo;
-                    emailRecive =  data[0].email;
-                }
-                console.log("Nouveau message envoyé par : " + pseudoSend + ", reçu par : " + pseudoRecive + " pour lui dire : " + msg + ", le : " + date)
+                if(data[0] != undefined) {
 
-                var sender = {"pseudo": pseudoSend, "email": emailSend};
-                var recipient = {"pseudo": pseudoRecive, "email": emailRecive};
-                var subject = 'Vous avez reçu un message de la part de ' + pseudoSend;
-                sendMail(sender, recipient, subject, msg);
+                    var pseudoSend = "";
+                    var pseudoRecive = "";
+                    var emailRecive = "";
+                    var emailSend = "";
+                    if (data[0].id == idUserSend) {
+                        pseudoSend = data[0].pseudo;
+                        emailSend = data[0].email;
+                        pseudoRecive = data[1].pseudo;
+                        emailRecive = data[1].email;
+                    }
+                    else {
+                        pseudoSend = data[1].pseudo;
+                        emailSend = data[1].email;
+                        pseudoRecive = data[0].pseudo;
+                        emailRecive = data[0].email;
+                    }
+                    console.log("Nouveau message envoyé par : " + pseudoSend + ", reçu par : " + pseudoRecive + " pour lui dire : " + msg + ", le : " + date)
+
+                    var sender = {"pseudo": pseudoSend, "email": emailSend};
+                    var recipient = {"pseudo": pseudoRecive, "email": emailRecive};
+                    var subject = 'Vous avez reçu un message de la part de ' + pseudoSend;
+                    var mail = email.sendMail(sender, recipient, subject, msg);
+                    res.setHeader('Content-Type', 'application/json');
+                    res.send(JSON.stringify(mail, null, 3));
+                }
+                else{
+                    var error = {error: true, message: "problème on ne trouve personne sur les id demandé"};
+                    res.setHeader('Content-Type', 'application/json');
+                    res.send(JSON.stringify(error, null, 3));
+                }
             }).catch(function (err) {
                 // just need one of these
                 console.log('error:', err);
@@ -63,39 +107,6 @@ router.post('/send', function(req, res, next) {
     }
 
 });
-
-function sendMail(sender, recipient, subject, message) {
-
-    if(sender && recipient && subject && message){
-        var transporter = nodemailer.createTransport(
-            {
-                service: 'gmail',
-                auth: {
-                    user: 'testhugo.sudefou@gmail.com',
-                    pass: 'Testhugo1!'
-                }
-            }
-        );
-        var mailOptions =
-            {
-                from: sender.email,
-                to: recipient.email,
-                subject: subject,
-                text: message,
-                html: '<p><b> ' + subject + ' </b></p><p>' + message + '</p>'
-            };
-
-        transporter.sendMail(mailOptions, function(error, info){
-            if(error){
-                return console.log(error);
-            }
-            console.log('Message sent: ' + info.response);
-        });
-
-
-        transporter.close();
-    }
-}
 
 router.post('/history', function(req, res, next) {
 
