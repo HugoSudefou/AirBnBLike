@@ -55,44 +55,100 @@ router.post('/login', function(req, res, next) {
 });
 
 router.post('/register', function(req, res, next) {
+    if(req.body.password == req.body.confirmPassword) {
 
-    var promise = verifyAccompt(req.body.email, req.body.pseudo).exec();
-    promise.then(function (data) {
-        if(data[0] == undefined){
-            var password = req.body.password;
-            bcrypt.genSalt(10, function(err, salt) {
-                bcrypt.hash(password, salt, null, function(err, hash) {
-                    req.body.password = hash;
-                    var allOption = req.body;
-                    allOption['salt'] = salt;
-                    var newUser = new Users(allOption);
-                    newUser.save(function(err2, data) {
-                        var sender = {email: "testhugo.sudefou@gmail.com"},
-                            recipient = {email: data.email},
-                            subject = "Bienvenu sur AirbnbLike",
-                            message = "Bonjour " + data     .pseudo + " bienvenu sur notre site";
-                        email.sendMail(sender, recipient, subject, message);
-                    })
+        var promise = verifyAccompt(req.body.email, req.body.pseudo, false).exec();
+        promise.then(function (data) {
+            if (data[0] == undefined) {
+                var password = req.body.password;
+                bcrypt.genSalt(10, function (err, salt) {
+                    bcrypt.hash(password, salt, null, function (err, hash) {
+                        req.body.password = hash;
+                        var allOption = req.body;
+                        allOption['salt'] = salt;
+                        var newUser = new Users(allOption);
+                        newUser.save(function (err2, data) {
+                            var sender = {email: "testhugo.sudefou@gmail.com"},
+                                recipient = {email: data.email},
+                                subject = "Bienvenu sur AirbnbLike",
+                                message = "Bonjour " + data.pseudo + " bienvenu sur notre site";
+                            email.sendMail(sender, recipient, subject, message);
+                        })
+                    });
                 });
-            });
-            req.body.password = undefined;
+                req.body.password = undefined;
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify(req.body, null, 3));
 
-            res.setHeader('Content-Type', 'application/json');
-            res.send(JSON.stringify(req.body, null, 3));
-
-        }
-        else{
-            var error = {error: true, message: "Ce mail/pseudo est déjà utilisé par un autre compte"};
-            res.send(JSON.stringify(error, null, 3));
-        }
-    }).catch(function (err) {
-        if(err) throw err;
-    });
-
+            }
+            else {
+                var error = {error: true, message: "Ce mail/pseudo est déjà utilisé par un autre compte"};
+                res.send(JSON.stringify(error, null, 3));
+            }
+        }).catch(function (err) {
+            if (err) throw err;
+        });
+    }
+    else{
+        var error = {error: true, message: "Les deux mot de passe sont différents"};
+        res.send(JSON.stringify(error, null, 3));
+    }
 });
 
-function verifyAccompt(mail, pseudo) {
-    return Users.find({$or: [ { email: mail } , { pseudo: pseudo }  ]});
+router.post('/update/password', function(req, res, next) {
+
+    var error = {message: "Le mot de passe a bien était modifié"};
+    if(req.body.id){
+        if(req.body.password == req.body.confirmPassword){
+
+            var password = req.body.password;
+
+            var promise = verifyAccompt(false, false, req.body.id).exec();
+            promise.then(function (data) {
+                bcrypt.genSalt(10, function (err, salt) {
+                    bcrypt.hash(password, salt, null, function (err, hash) {
+                        var newPassword = hash;
+                        data.password = newPassword;
+                        data.salt = salt;
+                        data.save();
+                    });
+                });
+            }).catch(function (err) {
+                if(err) throw err;
+            });
+        }
+        else error = {error: true, message: "Les deux mot de passe de sont pas identiques"};
+    }
+    else error = {error: true, message: "Il manque l'id pour retrouver le compte"};
+    res.send(JSON.stringify(error, null, 3));
+});
+
+router.post('/update/email', function(req, res, next) {
+
+    var error = {message: "L'email a bien était modifié"};
+    if(req.body.id){
+        if(req.body.email == req.body.confirmEmail){
+
+            var email = req.body.email;
+
+            var promise = verifyAccompt(false, false, req.body.id).exec();
+            promise.then(function (data) {
+                data.email = email;
+                data.save();
+            }).catch(function (err) {
+                if(err) throw err;
+            });
+        }
+        else error = {error: true, message: "Les deux mail de sont pas identiques"};
+    }
+    else error = {error: true, message: "Il manque l'id pour retrouver le compte"};
+    res.send(JSON.stringify(error, null, 3));
+});
+
+
+function verifyAccompt(mail, pseudo, id) {
+    if(id) return Users.findOne({ _id: id});
+    else return Users.find({$or: [ { email: mail } , { pseudo: pseudo }  ]});
 }
 
 module.exports = router;
