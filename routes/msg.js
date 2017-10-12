@@ -6,7 +6,7 @@ var Users = require('../models/users');
 var Msg = require('../models/msg');
 var querystring = require('querystring');
 var request = require('request');
-var email = require('../routes/email');
+var mesFonc = require('../module/fonc');
 var app = express();
 var config = require('../config');
 
@@ -37,8 +37,8 @@ router.post('/send', function(req, res, next) {
             date: date
         });
         newMsg.save();
-        var promise = Users.find({'_id': {$in : [idUserSend, idUserRecive]}})
-            .then(function (data) {
+        var promise = Users.find({'_id': {$in : [idUserSend, idUserRecive]}}).exec();
+            promise.then(function (data) {
                 if(data[0] != undefined) {
 
                     var pseudoSend = "";
@@ -62,7 +62,7 @@ router.post('/send', function(req, res, next) {
                     var sender = {"pseudo": pseudoSend, "email": emailSend};
                     var recipient = {"pseudo": pseudoRecive, "email": emailRecive};
                     var subject = 'Vous avez reçu un message de la part de ' + pseudoSend;
-                    var mail = email.sendMail(sender, recipient, subject, msg);
+                    var mail = mesFonc.sendMail(sender, recipient, subject, msg);
                     res.setHeader('Content-Type', 'application/json');
                     res.send(JSON.stringify(mail, null, 3));
                 }

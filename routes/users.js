@@ -3,12 +3,12 @@ var router = express.Router();
 var Users = require('../models/users');
 var bcrypt   = require('bcrypt-nodejs');
 var jwt    = require('jsonwebtoken');
+var mesFonc = require('../module/fonc');
 var app = express();
 var config = require('../config');
 
 app.set('superSecret', config.secret); // secret variable
 
-var email = require('../routes/email');
 /* GET users listing. */
 router.get('/', function(req, res, next) {
   res.send('respond with a resource');

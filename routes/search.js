@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
 var jwt    = require('jsonwebtoken');
+var mesFonc = require('../module/fonc');
 var Logements = require('../models/logements');
 var app = express();
 var config = require('../config');
@@ -41,7 +42,6 @@ router.post('/request', function (req, res) {
     else if(dateD && !ville) query = {"nbrPersonneMax": { $gte: nbrPersonne }, "dispo":{ $gte: new Date( dateD )} };
     else if(!dateD && ville) query = {"ville" : ville, "nbrPersonneMax": { $gte: nbrPersonne } };
     else query = {"ville" : ville, "nbrPersonneMax": { $gte: nbrPersonne }, "dispo":{ $gte: new Date( dateD )} };
-
 
     var formValid = false;
 

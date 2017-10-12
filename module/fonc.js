@@ -1,38 +1,10 @@
-var mongoose = require('mongoose');
-var express = require('express');
 var nodemailer = require('nodemailer');
-var jwt    = require('jsonwebtoken');
-var app = express();
-var config = require('../config');
 
-app.set('superSecret', config.secret); // secret variable
+exports.direBonjour = function() {
+    console.log('Bonjour !');
+};
 
-var router = express.Router();
-
-/* GET home page. */
-router.get('/', function(req, res, next) {
-    res.write('Page Email');
-});
-
-router.post('/', function(req, res, next) {
-
-    var sender = false,
-        recipient = false,
-        subject = false,
-        message = false;
-
-    if(req.body.sender) sender = req.body.sender;
-    if(req.body.destination) recipient = req.body.destination;
-    if(req.body.subject) subject = req.body.subject;
-    if(req.body.message) message = req.body.message;
-
-    if(sender && recipient && subject && message){
-        sendMail(sender, recipient, subject, message);
-    }
-
-});
-
-function sendMail(sender, recipient, subject, message) {
+exports.sendMail = function(sender, recipient, subject, message) {
 
     if(sender && recipient && subject && message){
         var transporter = nodemailer.createTransport(
@@ -69,7 +41,4 @@ function sendMail(sender, recipient, subject, message) {
     return error;
 }
 
-module.exports = {
-    router:router,
-    sendMail:sendMail
-};
+
