@@ -12,7 +12,7 @@ router.use(function(req, res, next) {
     // check header or url parameters or post parameters for token
     var token = req.body.token || req.query.token || req.headers['x-access-token'];
 
-    if(req.path == '/user/login' || req.path == '/user/register' || req.path == '/' /*|| req.method == 'GET'*/) next();
+    if(req.path == '/user/login' || req.path == '/user/register' || req.path == '/') next();
     else{
         if (token) {
 
