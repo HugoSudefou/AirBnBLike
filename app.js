@@ -11,16 +11,6 @@ var Booking = require('./models/booking');
 
 var config = require('./config');
 
-/*
-*
-*  A UTILISER POUR CRYPTER LE PASSWORD
-*
-* */
-/*
-*
-*  A UTILISER POUR CRYPTER LE PASSWORD
-*
-* */
 var index = require('./routes/index');
 var users = require('./routes/users');
 var search = require('./routes/search');
