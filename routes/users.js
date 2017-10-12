@@ -55,10 +55,10 @@ router.post('/login', function(req, res, next) {
 });
 
 router.post('/register', function(req, res, next) {
-    if (checkReq(req.body)) {
+    if (mesFonc.checkReq(req.body)) {
     	if(req.body.password == req.body.confirmPassword) {
 
-	        var promise = verifyAccompt(req.body.email, req.body.pseudo, false).exec();
+	        var promise = mesFonc.verifyAccompt(req.body.email, req.body.pseudo, false).exec();
 	        promise.then(function (data) {
 	            if (data[0] == undefined) {
 	                var password = req.body.password;
@@ -108,7 +108,7 @@ router.post('/update/password', function(req, res, next) {
 
             var password = req.body.password;
 
-            var promise = verifyAccompt(false, false, req.body.id).exec();
+            var promise = mesFonc.verifyAccompt(false, false, req.body.id).exec();
             promise.then(function (data) {
                 bcrypt.genSalt(10, function (err, salt) {
                     bcrypt.hash(password, salt, null, function (err, hash) {
@@ -136,7 +136,7 @@ router.post('/update/email', function(req, res, next) {
 
             var email = req.body.email;
 
-            var promise = verifyAccompt(false, false, req.body.id).exec();
+            var promise = mesFonc.verifyAccompt(false, false, req.body.id).exec();
             promise.then(function (data) {
                 data.email = email;
                 data.save();
@@ -150,7 +150,7 @@ router.post('/update/email', function(req, res, next) {
     res.send(JSON.stringify(error, null, 3));
 });
 
-function checkReq(requeteZer) {
+/*function checkReq(requeteZer) {
 	if (requeteZer) {
 		var tst = new RegExp("@");//"/^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/"
 		var res = tst.test(requeteZer.email);
@@ -169,11 +169,11 @@ function checkReq(requeteZer) {
 	} else {
 		return false;	
 	}
-}
+}*/
 
-function verifyAccompt(mail, pseudo, id) {
+/*function verifyAccompt(mail, pseudo, id) {
     if(id) return Users.findOne({ _id: id});
     else return Users.find({$or: [ { email: mail } , { pseudo: pseudo }  ]});
-}
+}*/
 
 module.exports = router;
