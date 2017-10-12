@@ -1,6 +1,8 @@
 var mongoose = require('mongoose');
 var express = require('express');
 var jwt    = require('jsonwebtoken');
+var mesFonc = require('../module/fonc');
+var monmodule = require('../module/fonc');
 var app = express();
 var config = require('../config');
 
@@ -41,6 +43,10 @@ router.use(function(req, res, next) {
 });
 /* GET home page. */
 router.get('/', function(req, res, next) {
+
+
+  monmodule.direBonjour();
+  monmodule.direByeBye();
 
   res.render('index', { title: 'Express', user: false });
 });

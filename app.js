@@ -8,6 +8,7 @@ var mongoose = require('mongoose');
 var Logements = require('./models/logements');
 var Users = require('./models/users');
 var Booking = require('./models/booking');
+var mesFonc = require('./module/fonc');
 
 var config = require('./config');
 
@@ -15,8 +16,6 @@ var index = require('./routes/index');
 var users = require('./routes/users');
 var search = require('./routes/search');
 var booking = require('./routes/booking');
-var email = require('./routes/email');
-
 var msg = require('./routes/msg');
 
 // Connection URL
@@ -36,7 +35,6 @@ app.use('/', index);
 app.use('/user', users);
 app.use('/search', search);
 app.use('/booking', booking);
-app.use('/email', email.router);
 app.use('/msg', msg);
 
 
@@ -231,6 +229,7 @@ promiseBooking.then(function(data) {
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
   err.status = 404;
+  mongoose.connection.close();
   next(err);
 });
 
@@ -239,7 +238,7 @@ app.use(function(err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
-
+  mongoose.connection.close();
   // render the error page
   res.status(err.status || 500);
   res.render('error');

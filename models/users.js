@@ -1,5 +1,6 @@
 // grab the things we need
 var mongoose = require('mongoose');
+var mesFonc = require('../module/fonc');
 var Schema = mongoose.Schema;
 var autoIncrement = require('mongoose-auto-increment');
 autoIncrement.initialize(mongoose.connection);
