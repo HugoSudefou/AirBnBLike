@@ -55,44 +55,49 @@ router.post('/login', function(req, res, next) {
 });
 
 router.post('/register', function(req, res, next) {
-    if(req.body.password == req.body.confirmPassword) {
+    if (checkReq(req.body)) {
+    	if(req.body.password == req.body.confirmPassword) {
 
-        var promise = verifyAccompt(req.body.email, req.body.pseudo, false).exec();
-        promise.then(function (data) {
-            if (data[0] == undefined) {
-                var password = req.body.password;
-                bcrypt.genSalt(10, function (err, salt) {
-                    bcrypt.hash(password, salt, null, function (err, hash) {
-                        req.body.password = hash;
-                        var allOption = req.body;
-                        allOption['salt'] = salt;
-                        var newUser = new Users(allOption);
-                        newUser.save(function (err2, data) {
-                            var sender = {email: "testhugo.sudefou@gmail.com"},
-                                recipient = {email: data.email},
-                                subject = "Bienvenu sur AirbnbLike",
-                                message = "Bonjour " + data.pseudo + " bienvenu sur notre site";
-                            email.sendMail(sender, recipient, subject, message);
-                        })
-                    });
-                });
-                req.body.password = undefined;
-                res.setHeader('Content-Type', 'application/json');
-                res.send(JSON.stringify(req.body, null, 3));
+	        var promise = verifyAccompt(req.body.email, req.body.pseudo, false).exec();
+	        promise.then(function (data) {
+	            if (data[0] == undefined) {
+	                var password = req.body.password;
+	                bcrypt.genSalt(10, function (err, salt) {
+	                    bcrypt.hash(password, salt, null, function (err, hash) {
+	                        req.body.password = hash;
+	                        var allOption = req.body;
+	                        allOption['salt'] = salt;
+	                        var newUser = new Users(allOption);
+	                        newUser.save(function (err2, data) {
+	                            var sender = {email: "testhugo.sudefou@gmail.com"},
+	                                recipient = {email: data.email},
+	                                subject = "Bienvenu sur AirbnbLike",
+	                                message = "Bonjour " + data.pseudo + " bienvenu sur notre site";
+	                            email.sendMail(sender, recipient, subject, message);
+	                        })
+	                    });
+	                });
+	                req.body.password = undefined;
+	                res.setHeader('Content-Type', 'application/json');
+	                res.send(JSON.stringify(req.body, null, 3));
 
-            }
-            else {
-                var error = {error: true, message: "Ce mail/pseudo est déjà utilisé par un autre compte"};
-                res.send(JSON.stringify(error, null, 3));
-            }
-        }).catch(function (err) {
-            if (err) throw err;
-        });
-    }
-    else{
-        var error = {error: true, message: "Les deux mot de passe sont différents"};
+	            }
+	            else {
+	                var error = {error: true, message: "Ce mail/pseudo est déjà utilisé par un autre compte"};
+	                res.send(JSON.stringify(error, null, 3));
+	            }
+	        }).catch(function (err) {
+	            if (err) throw err;
+	        });
+	    }
+	    else {
+	        var error = {error: true, message: "Les deux mot de passe sont différents"};
+	        res.send(JSON.stringify(error, null, 3));
+	    }
+ 	} else {
+    	var error = {error: true, message: "Les informations ne sont pas correctes."};
         res.send(JSON.stringify(error, null, 3));
-    }
+ 	}
 });
 
 router.post('/update/password', function(req, res, next) {
@@ -145,6 +150,26 @@ router.post('/update/email', function(req, res, next) {
     res.send(JSON.stringify(error, null, 3));
 });
 
+function checkReq(requeteZer) {
+	if (requeteZer) {
+		var tst = new RegExp("@");//"/^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/"
+		var res = tst.test(requeteZer.email);
+		if (requeteZer.pseudo == null || requeteZer.pseudo == '' ||
+			requeteZer.nom == null || requeteZer.nom == '' ||
+			requeteZer.prenom == null || requeteZer.prenom == '' ||
+			requeteZer.email == null || requeteZer.email == '' || res == false ||
+			requeteZer.password == null || requeteZer.password == '' ||
+			requeteZer.password != requeteZer.confirmPassword ||
+			requeteZer.birthday == null || requeteZer.birthday == '' ||
+			requeteZer.confirmPassword == null || requeteZer.confirmPassword == '') {
+			return false;
+		} else {
+			return true;
+		}
+	} else {
+		return false;	
+	}
+}
 
 function verifyAccompt(mail, pseudo, id) {
     if(id) return Users.findOne({ _id: id});
