@@ -73,7 +73,7 @@ router.post('/register', function(req, res, next) {
 	                                recipient = {email: data.email},
 	                                subject = "Bienvenu sur AirbnbLike",
 	                                message = "Bonjour " + data.pseudo + " bienvenu sur notre site";
-	                            email.sendMail(sender, recipient, subject, message);
+                                mesFonc.sendMail(sender, recipient, subject, message);
 	                        })
 	                    });
 	                });

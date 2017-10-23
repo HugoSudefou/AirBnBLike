@@ -14,7 +14,7 @@ var config = require('./config');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
-var search = require('./routes/search');
+var logement = require('./routes/logement');
 var booking = require('./routes/booking');
 var msg = require('./routes/msg');
 
@@ -33,7 +33,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', index);
 app.use('/user', users);
-app.use('/search', search);
+app.use('/logement', logement);
 app.use('/booking', booking);
 app.use('/msg', msg);
 
@@ -52,51 +52,61 @@ console.log(mongoose.connection.readyState);
 var featureLogement =
     [
         {
+            idUser: 25,
             ville: "Nanterre",
             nbrPersonneMax: 5,
             dispo: new Date( '2018-02-02' )
         },
         {
+            idUser: 25,
             ville: "Paris",
             nbrPersonneMax: 2,
             dispo: new Date( '2018-11-10' )
         },
         {
+            idUser: 25,
             ville: "Nice",
             nbrPersonneMax: 7,
             dispo: new Date( '2019-10-08' )
         },
         {
+            idUser: 25,
             ville: "Strasbourg",
             nbrPersonneMax: 3,
             dispo: new Date( '2017-12-11' )
         },
         {
+            idUser: 25,
             ville: "TestVille1",
             nbrPersonneMax: 2,
             dispo: new Date( '2019-08-22' )
         },
         {
+            idUser: 25,
             ville: "TestVille2",
             nbrPersonneMax: 5,
             dispo: new Date( '2018-08-22' )
         },
         {
+            idUser: 25,
             ville: "TestVille3",
             nbrPersonneMax: 4,
             dispo: new Date( '2019-07-12' )
         },
         {
+            idUser: 25,
             ville: "TestVille4",
             nbrPersonneMax: 2,
             dispo: new Date( '2018-10-23' )
         },
         {
+            idUser: 25,
             ville: "TestVille5",
             nbrPersonneMax: 4,
             dispo: new Date( '2019-06-22' )
         },
         {
+            idUser: 25,
             ville: "TestVille6",
             nbrPersonneMax: 5,
             dispo: new Date( '2020-12-31' )
@@ -109,56 +119,39 @@ var featurUser =
             nom: "Nom1",
             prenom: "Prenom1",
             email: "testhugo.sudefou@gmail.com",
-            password: "test",
+            password: "$2a$10$dYyr2Ub7WSUjonTtDeKUFeeExgbel0ooNt7OtWdNQK777kXVmBuJu",
             birthday: new Date('1995-10-08'),
-            salt: "salt1"
+            salt: "$2a$10$dYyr2Ub7WSUjonTtDeKUFe"
         },
         {
             pseudo: "Pseudo2",
             nom: "Nom2",
             prenom: "Prenom2",
             email: "hugo.sudefou@gmail.com",
-            password: "test",
+            password: "$2a$10$gN4wCiXmNs0UoNe5NxAcTuWCmX8fyUspzaKd/b1BiH6N37YXSZauy",
             birthday: new Date('1994-10-08'),
-            salt: "salt2"
+            salt: "$2a$10$gN4wCiXmNs0UoNe5NxAcTu"
         },
         {
             pseudo: "Pseudo3",
             nom: "Nom3",
             prenom: "Prenom3",
             email: "mail3@mail.fr",
-            password: "test",
+            password: "$2a$10$4picHiMoGJYLqLCeCdtkg.o.jAMiWcj/s7IqwjQ2PGtGxdm.vt1OW",
             birthday: new Date('1993-10-08'),
-            salt: "salt3"
+            salt: "$2a$10$4picHiMoGJYLqLCeCdtkg."
         },
         {
             pseudo: "Pseudo4",
             nom: "Nom4",
             prenom: "Prenom4",
             email: "mail4@mail.fr",
-            password: "test",
+            password: "$2a$10$ZoZWdvprYRuOO9e7zBLe7.go0gRQf9hr2726milcO6nl/COI.IWUm",
             birthday: new Date('1992-10-08'),
-            salt: "salt4"
-        },
-        {
-            pseudo: "Pseudo5",
-            nom: "Nom5",
-            prenom: "Prenom5",
-            email: "mail5@mail.fr",
-            password: "test",
-            birthday: new Date('1991-10-08'),
-            salt: "salt5"
-        },
-        {
-            pseudo: "Pseudo6",
-            nom: "Nom6",
-            prenom: "Prenom6",
-            email: "mail6@mail.fr",
-            password: "test",
-            birthday: new Date('1990-10-08'),
-            salt: "salt6"
+            salt: "$2a$10$ZoZWdvprYRuOO9e7zBLe7."
         }
     ];
+
 
 var featurBooking = new Booking({
     idLogement: 1,

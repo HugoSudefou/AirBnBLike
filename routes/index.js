@@ -44,11 +44,8 @@ router.use(function(req, res, next) {
 /* GET home page. */
 router.get('/', function(req, res, next) {
 
-
-  monmodule.direBonjour();
-  monmodule.direByeBye();
-
-  res.render('index', { title: 'Express', user: false });
+    mesFonc.direBonjour();
+    res.render('index', { title: 'Express', user: false });
 });
 
 module.exports = router;
