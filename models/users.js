@@ -17,7 +17,7 @@ var usersSchema = new Schema({
 usersSchema.plugin(autoIncrement.plugin, 'users');
 
 
-// the schema is useless so far
+// the schema is useless so farx
 // we need to create a model using it
 var Users = mongoose.model('users', usersSchema);
 

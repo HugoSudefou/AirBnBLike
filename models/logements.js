@@ -5,6 +5,7 @@ var autoIncrement = require('mongoose-auto-increment');
 autoIncrement.initialize(mongoose.connection);
 // create a schema
 var logementsSchema = new Schema({
+    idUser: { type: Number, required: true},
     ville: { type: String, required: true},
     nbrPersonneMax: { type: Number, required: true},
     dispo: { type: Date, required: true }

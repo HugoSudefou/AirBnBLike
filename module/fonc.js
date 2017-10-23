@@ -5,7 +5,6 @@ exports.direBonjour = function() {
 };
 
 exports.sendMail = function(sender, recipient, subject, message) {
-
     if(sender && recipient && subject && message){
         var transporter = nodemailer.createTransport(
             {
@@ -39,6 +38,6 @@ exports.sendMail = function(sender, recipient, subject, message) {
     }
     var error = {'error': true, 'message': "problème lors de l'envoi du mail de confirmation. Cependant le message a bien été envoyez"};
     return error;
-}
+};
 
 
