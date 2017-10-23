@@ -3,7 +3,6 @@ var express = require('express');
 var nodemailer = require('nodemailer');
 var jwt    = require('jsonwebtoken');
 var Users = require('../models/users');
-var Msg = require('../models/msg');
 var querystring = require('querystring');
 var request = require('request');
 var mesFonc = require('../module/fonc');
@@ -30,15 +29,31 @@ router.post('/send', function(req, res, next) {
     if(req.body.msg) msg = req.body.msg;
 
     if(idUserRecive && idUserSend && msg){
-        var newMsg = new Msg({
-            idUserSend: idUserSend,
-            idUserRecive: idUserRecive,
-            msg: msg,
-            date: date
-        });
-        newMsg.save();
+        var newMsg ={
+                idUserSend: idUserSend,
+                message: msg,
+                date: date
+            };
         var promise = Users.find({'_id': {$in : [idUserSend, idUserRecive]}}).exec();
             promise.then(function (data) {
+                console.log('data : ');
+                console.log(data);
+                Users.findOne({'_id': idUserRecive}, function (err, data) {
+                    if (err) throw err;
+                    else {
+                        console.log('err : ');
+                        console.log(err);
+                        console.log('data : ');
+                        console.log(data);
+                        var insert = Users.update({'_id': idUserRecive},{ $push : {message: newMsg}});
+                        insert.then(function (data) {
+                            console.log('data : ');
+                            console.log(data);
+                        }).catch(function (err) {
+                            if (err) throw err
+                        });
+                    }
+                });
                 if(data[0] != undefined) {
 
                     var pseudoSend = "";
@@ -71,6 +86,7 @@ router.post('/send', function(req, res, next) {
                     res.setHeader('Content-Type', 'application/json');
                     res.send(JSON.stringify(error, null, 3));
                 }
+
             }).catch(function (err) {
                 // just need one of these
                 console.log('error:', err);
@@ -82,11 +98,20 @@ router.post('/send', function(req, res, next) {
 router.post('/history', function(req, res, next) {
 
     if(req.body.idUser) idUser = req.body.idUser;
-
-    var promise = Msg.find({ $or: [ { idUserSend: idUser }, { idUserRecive: idUser } ] })
+    console.log('req.body : ');
+    console.log(req.body);
+    var msg = [];
+    var promise = Users.find({"message.idUserSend":idUser})
         .then(function (data) {
+            console.log('data : ');
+            console.log(data);
             res.setHeader('Content-Type', 'application/json');
-            res.send(JSON.stringify(data, null, 3));
+            data.forEach(function(data, index, arr) {
+                msg.push(data.message);
+            });
+
+            res.setHeader('Content-Type', 'application/json');
+            res.send(JSON.stringify(msg, null, 3));
         })
         .catch(function (err) {
             console.log('error:', err);

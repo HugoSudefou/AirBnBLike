@@ -12,7 +12,12 @@ var usersSchema = new Schema({
     email: { type: String, required: true },
     password: { type: String, required: true },
     birthday: { type: Date, required: true },
-    salt: { type: String, required: true }
+    salt: { type: String, required: true },
+    message: [{
+        idUserSend: {type: Number},
+        message: {type: String},
+        date: {type: Date}
+    }]
 });
 usersSchema.plugin(autoIncrement.plugin, 'users');
 
